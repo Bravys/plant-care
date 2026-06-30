@@ -43,7 +43,7 @@
   <div id="homeScreen">
     <h1 id="title">🌱 Plant Care</h1>
     <button id="langToggle">മലയാളം</button>
-    <input type="text" id="searchBar" placeholder="Search plants...">
+    <input type="text" id="searchBar" placeholder="Search plants or keywords...">
     <div id="buttons"></div>
   </div>
 
@@ -51,7 +51,7 @@
     <h2 id="plantName"></h2>
     <div id="details"></div>
     <h3 id="diseaseTitle">Check for Diseases</h3>
-    <input type="text" id="diseaseSearch" placeholder="Enter disease name...">
+    <input type="text" id="diseaseSearch" placeholder="Enter disease name or keywords...">
     <div id="remedies"></div>
     <button onclick="goHome()">⬅ Back</button>
   </div>
@@ -91,18 +91,18 @@
 
     const diseaseRemedies = {
       en: {
-        "powdery mildew": "Spray neem oil, avoid excess moisture.",
-        "leaf spot": "Remove affected leaves, use copper fungicide.",
-        "root rot": "Improve drainage, reduce watering."
+        "powdery mildew": { remedy:"Spray neem oil, avoid excess moisture.", keywords:["powdery","mildew","white","fungus"] },
+        "leaf spot": { remedy:"Remove affected leaves, use copper fungicide.", keywords:["leaf","spot","yellow","brown","patch"] },
+        "root rot": { remedy:"Improve drainage, reduce watering.", keywords:["root","rot","decay","wet soil"] }
       },
       ml: {
-        "പൗഡറി മിൽഡ്യൂ": "നീം ഓയിൽ തളിക്കുക, അധിക ഈർപ്പം ഒഴിവാക്കുക.",
-        "ഇല സ്പോട്ട്": "ബാധിത ഇലകൾ നീക്കം ചെയ്യുക, കോപ്പർ ഫംഗിസൈഡ് ഉപയോഗിക്കുക.",
-        "റൂട്ട് റോട്ട്": "ഡ്രെയിനേജ് മെച്ചപ്പെടുത്തുക, വെള്ളം കുറയ്ക്കുക."
+        "പൗഡറി മിൽഡ്യൂ": { remedy:"നീം ഓയിൽ തളിക്കുക, അധിക ഈർപ്പം ഒഴിവാക്കുക.", keywords:["പൗഡറി","മിൽഡ്യൂ","വെള്ള","ഫംഗസ്"] },
+        "ഇല സ്പോട്ട്": { remedy:"ബാധിത ഇലകൾ നീക്കം ചെയ്യുക, കോപ്പർ ഫംഗിസൈഡ് ഉപയോഗിക്കുക.", keywords:["ഇല","സ്പോട്ട്","മഞ്ഞ","തവിട്ട്","പാച്ച്"] },
+        "റൂട്ട് റോട്ട്": { remedy:"ഡ്രെയിനേജ് മെച്ചപ്പെടുത്തുക, വെള്ളം കുറയ്ക്കുക.", keywords:["റൂട്ട്","റോട്ട്","ചീഞ്ഞ","ഈർപ്പം"] }
       }
     };
 
-    // Generate buttons
+    // Render plant buttons
     function renderButtons() {
       const btnContainer = document.getElementById("buttons");
       btnContainer.innerHTML = "";
@@ -114,13 +114,26 @@
       });
     }
 
-    // Search bar logic
+    // Search bar logic (plants + keywords)
     document.getElementById("searchBar").addEventListener("keyup", e => {
       if (e.key === "Enter") {
         const query = e.target.value.toLowerCase();
         const found = plants[lang].find(p => p.toLowerCase() === query);
-        if (found) openPlantPage(found);
-        else alert(lang === "en" ? "Plant not found!" : "ചെടി കണ്ടെത്തിയില്ല!");
+        if (found) {
+          openPlantPage(found);
+        } else {
+          // keyword search across plant data
+          const matches = [];
+          for (const [name, data] of Object.entries(plantData[lang])) {
+            const values = Object.values(data).join(" ").toLowerCase();
+            if (values.includes(query)) matches.push(name);
+          }
+          if (matches.length > 0) {
+            alert((lang==="en"?"Matching plants: ":"പോരുത്തമുള്ള ചെടികൾ: ") + matches.join(", "));
+          } else {
+            alert(lang==="en" ? "No plant found." : "ചെടി കണ്ടെത്തിയില്ല.");
+          }
+        }
       }
     });
 
@@ -129,27 +142,5 @@
       document.getElementById("plantScreen").style.display = "block";
       document.getElementById("plantName").innerText = name;
       const d = plantData[lang][name];
-      document.getElementById("details").innerHTML = `
-        <p><b>${lang==="en"?"Speciality":"പ്രത്യേകത"}:</b> ${d.speciality}</p>
-        <p><b>${lang==="en"?"Soil":"മണ്ണ്"}:</b> ${d.soil}</p>
-        <p><b>${lang==="en"?"Watering":"വെള്ളം"}:</b> ${d.water}</p>
-        <p><b>${lang==="en"?"Manure":"വളം"}:</b> ${d.manure}</p>
-      `;
-      document.getElementById("diseaseTitle").innerText = lang==="en" ? "Check for Diseases" : "രോഗങ്ങൾ പരിശോധിക്കുക";
-      document.getElementById("diseaseSearch").placeholder = lang==="en" ? "Enter disease name..." : "രോഗത്തിന്റെ പേര് നൽകുക...";
-      document.getElementById("remedies").innerText = "";
-    }
-
-    document.getElementById("diseaseSearch").addEventListener("keyup", e => {
-      if (e.key === "Enter") {
-        const query = e.target.value.toLowerCase();
-        const remedies = diseaseRemedies[lang];
-        // Case-insensitive match
-        const foundKey = Object.keys(remedies).find(k => k.toLowerCase() === query);
-        const remedy = foundKey ? remedies[foundKey] : null;
-        document.getElementById("remedies").innerText = remedy ? remedy : (lang==="en" ? "No remedy found." : "പരിഹാരം കണ്ടെത്തിയില്ല.");
-      }
-    });
-
-    function goHome() {
-      document.getElementById("
+      if (!d) {
+        document.getElementById("details").innerHTML = lang==="en" ? "<p>No details available.</p>" : "<p>വ
