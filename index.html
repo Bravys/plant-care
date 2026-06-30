@@ -36,11 +36,13 @@
     button:hover { background-color: #333; }
     #homeScreen, #plantScreen { display: none; }
     #details, #remedies { margin: 20px; text-align: left; }
+    #langToggle { margin: 20px auto; width: 40%; }
   </style>
 </head>
 <body>
   <div id="homeScreen">
-    <h1>🌱 Plant Care</h1>
+    <h1 id="title">🌱 Plant Care</h1>
+    <button id="langToggle">മലയാളം</button>
     <input type="text" id="searchBar" placeholder="Search plants...">
     <div id="buttons"></div>
   </div>
@@ -48,52 +50,77 @@
   <div id="plantScreen">
     <h2 id="plantName"></h2>
     <div id="details"></div>
-    <h3>Check for Diseases</h3>
+    <h3 id="diseaseTitle">Check for Diseases</h3>
     <input type="text" id="diseaseSearch" placeholder="Enter disease name...">
     <div id="remedies"></div>
     <button onclick="goHome()">⬅ Back</button>
   </div>
 
   <script>
-    const plants = [
-      "Mango","Jackfruit","Hibiscus","Rose","Coconut",
-      "Plantain","Wild Jack","Jasmine","Ixora"
-    ];
+    let lang = "en"; // default language
+
+    const plants = {
+      en: ["Mango","Jackfruit","Hibiscus","Rose","Coconut","Plantain","Wild Jack","Jasmine","Ixora"],
+      ml: ["മാങ്ങ","ചക്ക","ചെമ്പരത്തി","റോസ്","തേങ്ങ","വാഴ","പ്ലാവ്","മുല്ല","ചെമ്പരത്തി ഇക്സോറ"]
+    };
 
     const plantData = {
-      Mango: { soil:"Loamy", water:"Weekly", manure:"Organic compost", speciality:"Sweet fruit" },
-      Jackfruit: { soil:"Sandy loam", water:"Weekly", manure:"Farmyard manure", speciality:"Large edible fruit" },
-      Hibiscus: { soil:"Well-drained", water:"Every 2 days", manure:"Potash-rich fertilizer", speciality:"Medicinal flower" },
-      Rose: { soil:"Clay loam", water:"Every 2 days", manure:"Bone meal", speciality:"Fragrant flower" },
-      Coconut: { soil:"Sandy coastal", water:"Daily", manure:"Cow dung", speciality:"Multipurpose tree" },
-      Plantain: { soil:"Rich loam", water:"Daily", manure:"Banana manure mix", speciality:"Fruit plant" },
-      "Wild Jack": { soil:"Laterite", water:"Weekly", manure:"Organic compost", speciality:"Wild fruit tree" },
-      Jasmine: { soil:"Well-drained", water:"Every 2 days", manure:"Phosphorus fertilizer", speciality:"Fragrant flower" },
-      Ixora: { soil:"Acidic soil", water:"Every 2 days", manure:"NPK fertilizer", speciality:"Ornamental shrub" }
+      en: {
+        Mango: { soil:"Loamy", water:"Weekly", manure:"Organic compost", speciality:"Sweet fruit" },
+        Jackfruit: { soil:"Sandy loam", water:"Weekly", manure:"Farmyard manure", speciality:"Large edible fruit" },
+        Hibiscus: { soil:"Well-drained", water:"Every 2 days", manure:"Potash-rich fertilizer", speciality:"Medicinal flower" },
+        Rose: { soil:"Clay loam", water:"Every 2 days", manure:"Bone meal", speciality:"Fragrant flower" },
+        Coconut: { soil:"Sandy coastal", water:"Daily", manure:"Cow dung", speciality:"Multipurpose tree" },
+        Plantain: { soil:"Rich loam", water:"Daily", manure:"Banana manure mix", speciality:"Fruit plant" },
+        "Wild Jack": { soil:"Laterite", water:"Weekly", manure:"Organic compost", speciality:"Wild fruit tree" },
+        Jasmine: { soil:"Well-drained", water:"Every 2 days", manure:"Phosphorus fertilizer", speciality:"Fragrant flower" },
+        Ixora: { soil:"Acidic soil", water:"Every 2 days", manure:"NPK fertilizer", speciality:"Ornamental shrub" }
+      },
+      ml: {
+        മാങ്ങ: { soil:"ചെളി മണ്ണ്", water:"ആഴ്ചയിൽ ഒരിക്കൽ", manure:"ഓർഗാനിക് കമ്പോസ്റ്റ്", speciality:"മധുരമുള്ള പഴം" },
+        ചക്ക: { soil:"മണൽ മണ്ണ്", water:"ആഴ്ചയിൽ ഒരിക്കൽ", manure:"കൃഷി വളം", speciality:"വലിയ പഴം" },
+        ചെമ്പരത്തി: { soil:"നന്നായി ഒഴുകുന്ന മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"പൊട്ടാഷ് വളം", speciality:"ഔഷധ പൂവ്" },
+        റോസ്: { soil:"ക്ലേ മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"ബോൺ മീൽ", speciality:"സുഗന്ധ പൂവ്" },
+        തേങ്ങ: { soil:"മണൽ തീരപ്രദേശം", water:"ദിവസേന", manure:"കാളവളം", speciality:"ബഹുമുഖ വൃക്ഷം" },
+        വാഴ: { soil:"സമ്പന്നമായ മണ്ണ്", water:"ദിവസേന", manure:"വാഴ വളം", speciality:"പഴം" },
+        പ്ലാവ്: { soil:"ലാറ്ററൈറ്റ് മണ്ണ്", water:"ആഴ്ചയിൽ ഒരിക്കൽ", manure:"ഓർഗാനിക് കമ്പോസ്റ്റ്", speciality:"കാട്ടുപഴം" },
+        മുല്ല: { soil:"നന്നായി ഒഴുകുന്ന മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"ഫോസ്ഫറസ് വളം", speciality:"സുഗന്ധ പൂവ്" },
+        ചെമ്പരത്തി ഇക്സോറ: { soil:"ആസിഡിക് മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"എൻപികെ വളം", speciality:"അലങ്കാര ചെടി" }
+      }
     };
 
     const diseaseRemedies = {
-      "powdery mildew": "Spray neem oil, avoid excess moisture.",
-      "leaf spot": "Remove affected leaves, use copper fungicide.",
-      "root rot": "Improve drainage, reduce watering."
+      en: {
+        "powdery mildew": "Spray neem oil, avoid excess moisture.",
+        "leaf spot": "Remove affected leaves, use copper fungicide.",
+        "root rot": "Improve drainage, reduce watering."
+      },
+      ml: {
+        "പൗഡറി മിൽഡ്യൂ": "നീം ഓയിൽ തളിക്കുക, അധിക ഈർപ്പം ഒഴിവാക്കുക.",
+        "ഇല സ്പോട്ട്": "ബാധിത ഇലകൾ നീക്കം ചെയ്യുക, കോപ്പർ ഫംഗിസൈഡ് ഉപയോഗിക്കുക.",
+        "റൂട്ട് റോട്ട്": "ഡ്രെയിനേജ് മെച്ചപ്പെടുത്തുക, വെള്ളം കുറയ്ക്കുക."
+      }
     };
 
-    // Generate home buttons
-    const btnContainer = document.getElementById("buttons");
-    plants.forEach(p => {
-      const btn = document.createElement("button");
-      btn.innerText = p;
-      btn.onclick = () => openPlantPage(p);
-      btnContainer.appendChild(btn);
-    });
+    // Generate buttons
+    function renderButtons() {
+      const btnContainer = document.getElementById("buttons");
+      btnContainer.innerHTML = "";
+      plants[lang].forEach(p => {
+        const btn = document.createElement("button");
+        btn.innerText = p;
+        btn.onclick = () => openPlantPage(p);
+        btnContainer.appendChild(btn);
+      });
+    }
 
     // Search bar logic
     document.getElementById("searchBar").addEventListener("keyup", e => {
       if (e.key === "Enter") {
         const query = e.target.value.toLowerCase();
-        const found = plants.find(p => p.toLowerCase() === query);
+        const found = plants[lang].find(p => p.toLowerCase() === query);
         if (found) openPlantPage(found);
-        else alert("Plant not found!");
+        else alert(lang === "en" ? "Plant not found!" : "ചെടി കണ്ടെത്തിയില്ല!");
       }
     });
 
@@ -101,32 +128,20 @@
       document.getElementById("homeScreen").style.display = "none";
       document.getElementById("plantScreen").style.display = "block";
       document.getElementById("plantName").innerText = name;
-      const d = plantData[name];
+      const d = plantData[lang][name];
       document.getElementById("details").innerHTML = `
-        <p><b>Speciality:</b> ${d.speciality}</p>
-        <p><b>Soil:</b> ${d.soil}</p>
-        <p><b>Watering:</b> ${d.water}</p>
-        <p><b>Manure:</b> ${d.manure}</p>
+        <p><b>${lang==="en"?"Speciality":"പ്രത്യേകത"}:</b> ${d.speciality}</p>
+        <p><b>${lang==="en"?"Soil":"മണ്ണ്"}:</b> ${d.soil}</p>
+        <p><b>${lang==="en"?"Watering":"വെള്ളം"}:</b> ${d.water}</p>
+        <p><b>${lang==="en"?"Manure":"വളം"}:</b> ${d.manure}</p>
       `;
-      document.getElementById("diseaseSearch").value = "";
+      document.getElementById("diseaseTitle").innerText = lang==="en" ? "Check for Diseases" : "രോഗങ്ങൾ പരിശോധിക്കുക";
+      document.getElementById("diseaseSearch").placeholder = lang==="en" ? "Enter disease name..." : "രോഗത്തിന്റെ പേര് നൽകുക...";
       document.getElementById("remedies").innerText = "";
     }
 
     document.getElementById("diseaseSearch").addEventListener("keyup", e => {
       if (e.key === "Enter") {
         const query = e.target.value.toLowerCase();
-        const remedy = diseaseRemedies[query];
-        document.getElementById("remedies").innerText = remedy ? remedy : "No remedy found.";
-      }
-    });
-
-    function goHome() {
-      document.getElementById("plantScreen").style.display = "none";
-      document.getElementById("homeScreen").style.display = "block";
-    }
-
-    // Start at home screen
-    document.getElementById("homeScreen").style.display = "block";
-  </script>
-</body>
-</html>
+        const remedy = diseaseRemedies[lang][query];
+        document.getElementById("
