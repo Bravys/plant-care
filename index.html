@@ -1,43 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Plant Care App</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-    h1, h2, h3 { margin-top: 20px; }
-    #searchBar, #diseaseSearch {
-      width: 80%;
-      padding: 10px;
-      margin: 20px auto;
-      border-radius: 8px;
-      border: none;
-      display: block;
-    }
-    button {
-      display: block;
-      width: 80%;
-      margin: 10px auto;
-      padding: 15px;
-      border-radius: 20px;
-      border: none;
-      background-color: #1f1f1f;
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    button:hover { background-color: #333; }
-    #homeScreen, #plantScreen { display: none; }
-    #details, #remedies { margin: 20px; text-align: left; }
-    #langToggle { margin: 20px auto; width: 40%; }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <div id="homeScreen">
@@ -56,91 +23,6 @@
     <button onclick="goHome()">⬅ Back</button>
   </div>
 
-  <script>
-    let lang = "en"; // default language
-
-    const plants = {
-      en: ["Mango","Jackfruit","Hibiscus","Rose","Coconut","Plantain","Wild Jack","Jasmine","Ixora"],
-      ml: ["മാങ്ങ","ചക്ക","ചെമ്പരത്തി","റോസ്","തേങ്ങ","വാഴ","പ്ലാവ്","മുല്ല","ചെമ്പരത്തി ഇക്സോറ"]
-    };
-
-    const plantData = {
-      en: {
-        Mango: { soil:"Loamy", water:"Weekly", manure:"Organic compost", speciality:"Sweet fruit" },
-        Jackfruit: { soil:"Sandy loam", water:"Weekly", manure:"Farmyard manure", speciality:"Large edible fruit" },
-        Hibiscus: { soil:"Well-drained", water:"Every 2 days", manure:"Potash-rich fertilizer", speciality:"Medicinal flower" },
-        Rose: { soil:"Clay loam", water:"Every 2 days", manure:"Bone meal", speciality:"Fragrant flower" },
-        Coconut: { soil:"Sandy coastal", water:"Daily", manure:"Cow dung", speciality:"Multipurpose tree" },
-        Plantain: { soil:"Rich loam", water:"Daily", manure:"Banana manure mix", speciality:"Fruit plant" },
-        "Wild Jack": { soil:"Laterite", water:"Weekly", manure:"Organic compost", speciality:"Wild fruit tree" },
-        Jasmine: { soil:"Well-drained", water:"Every 2 days", manure:"Phosphorus fertilizer", speciality:"Fragrant flower" },
-        Ixora: { soil:"Acidic soil", water:"Every 2 days", manure:"NPK fertilizer", speciality:"Ornamental shrub" }
-      },
-      ml: {
-        മാങ്ങ: { soil:"ചെളി മണ്ണ്", water:"ആഴ്ചയിൽ ഒരിക്കൽ", manure:"ഓർഗാനിക് കമ്പോസ്റ്റ്", speciality:"മധുരമുള്ള പഴം" },
-        ചക്ക: { soil:"മണൽ മണ്ണ്", water:"ആഴ്ചയിൽ ഒരിക്കൽ", manure:"കൃഷി വളം", speciality:"വലിയ പഴം" },
-        ചെമ്പരത്തി: { soil:"നന്നായി ഒഴുകുന്ന മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"പൊട്ടാഷ് വളം", speciality:"ഔഷധ പൂവ്" },
-        റോസ്: { soil:"ക്ലേ മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"ബോൺ മീൽ", speciality:"സുഗന്ധ പൂവ്" },
-        തേങ്ങ: { soil:"മണൽ തീരപ്രദേശം", water:"ദിവസേന", manure:"കാളവളം", speciality:"ബഹുമുഖ വൃക്ഷം" },
-        വാഴ: { soil:"സമ്പന്നമായ മണ്ണ്", water:"ദിവസേന", manure:"വാഴ വളം", speciality:"പഴം" },
-        പ്ലാവ്: { soil:"ലാറ്ററൈറ്റ് മണ്ണ്", water:"ആഴ്ചയിൽ ഒരിക്കൽ", manure:"ഓർഗാനിക് കമ്പോസ്റ്റ്", speciality:"കാട്ടുപഴം" },
-        മുല്ല: { soil:"നന്നായി ഒഴുകുന്ന മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"ഫോസ്ഫറസ് വളം", speciality:"സുഗന്ധ പൂവ്" },
-        ചെമ്പരത്തി ഇക്സോറ: { soil:"ആസിഡിക് മണ്ണ്", water:"രണ്ട് ദിവസത്തിലൊരിക്കൽ", manure:"എൻപികെ വളം", speciality:"അലങ്കാര ചെടി" }
-      }
-    };
-
-    const diseaseRemedies = {
-      en: {
-        "powdery mildew": { remedy:"Spray neem oil, avoid excess moisture.", keywords:["powdery","mildew","white","fungus"] },
-        "leaf spot": { remedy:"Remove affected leaves, use copper fungicide.", keywords:["leaf","spot","yellow","brown","patch"] },
-        "root rot": { remedy:"Improve drainage, reduce watering.", keywords:["root","rot","decay","wet soil"] }
-      },
-      ml: {
-        "പൗഡറി മിൽഡ്യൂ": { remedy:"നീം ഓയിൽ തളിക്കുക, അധിക ഈർപ്പം ഒഴിവാക്കുക.", keywords:["പൗഡറി","മിൽഡ്യൂ","വെള്ള","ഫംഗസ്"] },
-        "ഇല സ്പോട്ട്": { remedy:"ബാധിത ഇലകൾ നീക്കം ചെയ്യുക, കോപ്പർ ഫംഗിസൈഡ് ഉപയോഗിക്കുക.", keywords:["ഇല","സ്പോട്ട്","മഞ്ഞ","തവിട്ട്","പാച്ച്"] },
-        "റൂട്ട് റോട്ട്": { remedy:"ഡ്രെയിനേജ് മെച്ചപ്പെടുത്തുക, വെള്ളം കുറയ്ക്കുക.", keywords:["റൂട്ട്","റോട്ട്","ചീഞ്ഞ","ഈർപ്പം"] }
-      }
-    };
-
-    // Render plant buttons
-    function renderButtons() {
-      const btnContainer = document.getElementById("buttons");
-      btnContainer.innerHTML = "";
-      plants[lang].forEach(p => {
-        const btn = document.createElement("button");
-        btn.innerText = p;
-        btn.onclick = () => openPlantPage(p);
-        btnContainer.appendChild(btn);
-      });
-    }
-
-    // Search bar logic (plants + keywords)
-    document.getElementById("searchBar").addEventListener("keyup", e => {
-      if (e.key === "Enter") {
-        const query = e.target.value.toLowerCase();
-        const found = plants[lang].find(p => p.toLowerCase() === query);
-        if (found) {
-          openPlantPage(found);
-        } else {
-          // keyword search across plant data
-          const matches = [];
-          for (const [name, data] of Object.entries(plantData[lang])) {
-            const values = Object.values(data).join(" ").toLowerCase();
-            if (values.includes(query)) matches.push(name);
-          }
-          if (matches.length > 0) {
-            alert((lang==="en"?"Matching plants: ":"പോരുത്തമുള്ള ചെടികൾ: ") + matches.join(", "));
-          } else {
-            alert(lang==="en" ? "No plant found." : "ചെടി കണ്ടെത്തിയില്ല.");
-          }
-        }
-      }
-    });
-
-    function openPlantPage(name) {
-      document.getElementById("homeScreen").style.display = "none";
-      document.getElementById("plantScreen").style.display = "block";
-      document.getElementById("plantName").innerText = name;
-      const d = plantData[lang][name];
-      if (!d) {
-        document.getElementById("details").innerHTML = lang==="en" ? "<p>No details available.</p>" : "<p>വ
+  <script src="app.js"></script>
+</body>
+</html>
