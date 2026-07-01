@@ -3,7 +3,7 @@ let lang = "en"; // default language
 // Plant names
 const plants = {
   en: ["Mango","Jackfruit","Hibiscus","Rose","Coconut","Plantain","Wild Jack","Jasmine","Ixora"],
-  ml: ["മാങ്ങ","ചക്ക","ചെമ്പരത്തി","റോസ്","തേങ്ങ","വാഴ","പ്ലാവ്","മുല്ല","ചെമ്പരത്തി ഇക്സോറ"]
+  ml: ["മാങ്ങ","ചക്ക","ചെമ്പരത്തി","റോസ്","തേങ്ങ","വാഴ","പ്ലാവ്","മുല്ല"," ഇക്സോറ"]
 };
 
 // Plant data (English + Malayalam)
