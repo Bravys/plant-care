@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Plant Care App</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#121212">
+
+  <!-- Favicon / tab icon -->
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+</head>
+<body>
+  <div id="homeScreen">
+    <h1 id="title">🌱 Plant Care</h1>
+    <button id="langToggle">മലയാളം</button>
+    <input type="text" id="searchBar" placeholder="Search plants or keywords...">
+    <div id="categoryTags"></div>
+    <div id="buttons"></div>
+  </div>
+
+  <div id="plantScreen">
+    <h2 id="plantName"></h2>
+    <div id="details"></div>
+    <h3 id="diseaseTitle">Check for Diseases</h3>
+    <input type="text" id="diseaseSearch" placeholder="Enter disease name or keywords...">
+    <div id="remedies"></div>
+    <button onclick="goHome()">⬅ Back</button>
+  </div>
+
+  <!-- app.js must load once, at the end of body, so the DOM elements above exist first -->
+  <script src="app.js"></script>
+</body>
+</html>
